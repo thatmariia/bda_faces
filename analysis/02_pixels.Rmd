@@ -1,0 +1,29 @@
+# Importing data
+
+When working with image data, you often have many more gigabytes of raw data than you
+have RAM. Therefore, it is often not possible to work with all data "in memory".
+Resizing the images often helps, but may result in loss of information.
+
+The images for this contest are:
+
+- grayscale, so we only need one *color channel*;
+- only 48 by 48 pixels.
+
+Also, there are only 2538 images in the training set. Therefore, we are fortunate enough
+to be able to keep all of the images in RAM, and we don't have to do any "special stuff"
+to handle the reading of the image files while fitting a model.
+
+Reading in images pixelwise is easiest: We simply store each image as a long vector of
+pixel intensities, column by column. Also we will need a vector that contains the
+emotion label for each of the images.
+
+```{r pixels-1, code=readLines("R/features/raw_pixels.R"), fold="Raw pixel functions", message=FALSE}
+source("R/features/raw_pixels.R", local = TRUE, print.eval = TRUE)
+```
+
+```{r pixels-2}
+pixels <- prepare_pixels(image_files)
+x_train <- pixels$x_train
+y <- pixels$y
+x_test <- pixels$x_test
+```

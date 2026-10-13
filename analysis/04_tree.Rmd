@@ -1,0 +1,72 @@
+# Fitting a model
+
+To find out which model gives the best trade-off between bias and variance, between
+accuracy and flexibility, one strategy is to fit both a flexible and a more rigid model
+and determine from the CV error which direction on the flexibility axis we should go to
+avoid overtraining.
+
+We'll consider classification trees and random forests. Random forests are probably the
+least prone to overtraining, and are considered one of the best "off-the-shelf" machine
+learning algorithms, in the sense that they require little expertise to apply and
+perform well without tuning. (That's not to say that tuning shouldn't be considered!)
+It's your Uncle Bob's favorite algorithm, so to speak.
+
+## Classification tree
+
+As an example, here we fit a classification tree, using the pixel based approach.
+
+```{r tree-1, code=readLines("R/models/classification_tree.R"), fold="Classification tree function", message=FALSE}
+source("R/models/classification_tree.R", local = TRUE, print.eval = TRUE)
+```
+
+```{r tree-2, code=readLines("R/evaluation/classification.R"), fold="Classification evaluation function", message=FALSE}
+source("R/evaluation/classification.R", local = TRUE, print.eval = TRUE)
+```
+
+```{r tree-3, code=readLines("R/evaluation/tree.R"), fold="Tree plotting function", message=FALSE}
+source("R/evaluation/tree.R", local = TRUE, print.eval = TRUE)
+```
+
+We set a seed for repeatability and use five-fold cross-validation. The
+complexity parameter is set to `cp = 0.02`.
+
+```{r fit-tree}
+set.seed(2023) # for repeatability (generally pick the seed randomly)
+control <- caret::trainControl("cv", 5, allowParallel = TRUE)
+tt <- Sys.time() # Measure execution time
+
+## Fit a CART using 5-fold cross-validation to tune the complexity parameter
+fittree <- fit_classification_tree(x_train, y, control, cp = 0.02)
+fittree
+
+## Report execution time
+cat("\nExecution time: ", Sys.time() - tt, "\n")
+```
+
+The fitted tree shows the pixel splits used to predict each emotion.
+
+```{r show-tree}
+## Graphical visualization of the decision tree
+options(repr.plot.width = 14, repr.plot.height = 8)
+layout(1)
+plot_tree(fittree)
+
+## Textual visualization of the decision tree
+fittree$finalModel
+```
+
+The cross validated accuracy estimate is around 55%.
+
+As always, it's useful to check how well the algorithm performs on the training set: If
+it doesn't classify the training set accurately, how can you expect better results on
+the test set? This seemingly obvious point is often overlooked—surprisingly.
+
+The confusion matrix below measures performance on the training images.
+Cross-validation estimates performance on images held out from each fit.
+
+```{r evaluate-tree}
+## Check performance on training set
+training_predictions <- predict(fittree, x_train, type = "raw")
+training_performance <- evaluate_classification(training_predictions, y)
+training_performance
+```

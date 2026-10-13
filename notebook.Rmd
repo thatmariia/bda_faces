@@ -1,0 +1,25 @@
+---
+title: "BDA 2026 Emotional Human Faces"
+output:
+  html_document:
+    code_folding: show
+---
+
+```{r report-tools, include=FALSE, eval=TRUE}
+source("scripts/report.R")
+knitr::opts_knit$set(root.dir = here::here())
+knitr::opts_hooks$set(fold = function(options) {
+  options$class.source <- "fold-hide"
+  options
+})
+```
+
+We will recognize emotions from photographs of facial expressions. We start
+with pixel intensities as features and fit a classification tree.
+
+```{r setup, message=FALSE, code=readLines("setup.R"), fold="Packages and paths"}
+source("setup.R", local = TRUE)
+```
+
+```{r sections, child=read_sections()}
+```
