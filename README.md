@@ -70,11 +70,13 @@ pixels. Its outputs, `features_train` and `features_test`, feed the tree and
 prediction sections. After editing section 03, rerun the model and submission
 sections.
 
-Each model gets a function in `R/models/` and its own Rmd, like
-`analysis/05_tree.Rmd`. Use the tree function and Rmd as templates. Reuse the settings in `04_models.Rmd`, set a fixed seed,
-and give each fitted model a distinct name. Insert new model sections before
-model selection, renumbering later sections. Compare cross-validation results
-and choose `final_model` in `06_model_selection.Rmd`; submission uses that choice.
+For model work, add a trainer file in `R/models/` and an entry in the `trainers`
+list in `R/models/models.R`. Each trainer accepts `x`, `y`, and `control` and
+returns a caret fit. `train_models()` returns fits and per-model timing in seconds;
+the Rmd stores these as `models` and `training$timings`.
+Model files are loaded and embedded automatically by `analysis/04_models.Rmd`;
+keep their top level limited to function definitions. Explain your models there,
+then choose `final_model` in `05_model_selection.Rmd` before submission.
 
 ## Team workflow
 
