@@ -1,8 +1,6 @@
 # Reading image files
 
-Get all image files: file names ending in `.png`. The training images are
-stored in folders named after their emotion labels, and the test images are
-stored in a separate folder. The `sadness` folder supplies the label `sad`.
+Get all image files: file names ending in `.png`.
 
 ```{r data-1, code=readLines("R/data/read_images.R"), fold="Image file functions", message=FALSE}
 source("R/data/read_images.R", local = TRUE, print.eval = TRUE)
