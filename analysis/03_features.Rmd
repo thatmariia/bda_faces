@@ -1,0 +1,14 @@
+# Feature construction
+
+Add features in individual files within `R/features/`.
+Wire them up in `R/features/features.R` and source that file here.
+
+
+```{r feature-functions, code=readLines("R/features/features.R"), fold="Feature functions"}
+source("R/features/features.R", local = TRUE)
+```
+
+```{r extract-features}
+features_train <- features(x_train)
+features_test <- features(x_test)
+```
