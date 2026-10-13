@@ -9,10 +9,8 @@ one report or standalone notebook.
 analysis/          numbered Rmd sections, executed in filename order
 R/                 reusable functions by purpose:
                    data, features, models, evaluation, visualization, submission
-scripts/           section discovery and execution
-setup.R            packages and input/output paths
+scripts/           setup, section execution, formatting, and notebook export
 notebook.Rmd       complete report
-build_notebook.R   standalone notebook export
 renv.lock          shared package versions
 data/              local inputs; see data/README.md
 output/            generated files
@@ -43,13 +41,13 @@ Run these from the repository root:
 Rscript scripts/run.R            # all sections
 Rscript scripts/run.R 02_pixels  # stop after this section
 Rscript -e 'rmarkdown::render("notebook.Rmd", output_dir = "output")'
-Rscript build_notebook.R         # output/notebook.ipynb
+Rscript scripts/build_notebook.R # output/notebook.ipynb
 ```
 
 To work interactively in either editor, prepare earlier sections in your R session:
 
 ```r
-source("setup.R")
+source("scripts/setup.R")
 source("scripts/report.R")
 run_sections(read_sections()[1:2])
 ```
@@ -73,8 +71,8 @@ files, agree who edits shared files, and keep commits small with lowercase messa
 Review changes through pull requests; coordinate conflicts with the affected author.
 
 ```sh
-Rscript check_style.R --fix  # format and lint
-Rscript check_style.R        # check without editing
+Rscript scripts/check_style.R --fix # format and lint
+Rscript scripts/check_style.R       # check without editing
 ```
 
 Before committing, run affected sections and rebuild the notebook. Keep data and

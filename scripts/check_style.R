@@ -2,7 +2,7 @@
 args <- commandArgs(trailingOnly = TRUE)
 fix <- identical(args, "--fix")
 if (length(args) && !fix) {
-  stop("Usage: Rscript check_style.R [--fix]", call. = FALSE)
+  stop("Usage: Rscript scripts/check_style.R [--fix]", call. = FALSE)
 }
 files <- c(
   list.files(
@@ -20,6 +20,6 @@ for (file in files) {
   lint_count <- lint_count + length(lints)
 }
 if (anyNA(style$changed) || (!fix && any(style$changed)) || lint_count > 0L) {
-  stop("Run Rscript check_style.R --fix, then resolve remaining lints.", call. = FALSE)
+  stop("Run Rscript scripts/check_style.R --fix, then resolve remaining lints.", call. = FALSE)
 }
 message("Lint and style checks passed.")

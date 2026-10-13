@@ -16,5 +16,5 @@ jobs:
           use-public-rspm: true
       - uses: r-lib/actions/setup-pandoc@v2
       - uses: r-lib/actions/setup-renv@v2
-      - run: Rscript check_style.R
-      - run: Rscript build_notebook.R
+      - run: Rscript scripts/check_style.R
+      - run: Rscript scripts/build_notebook.R

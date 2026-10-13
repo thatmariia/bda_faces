@@ -7,5 +7,5 @@ if (length(args)) {
   if (is.na(last)) stop("Unknown section: ", args)
   sections <- sections[seq_len(last)]
 }
-source("setup.R")
+source("scripts/setup.R")
 run_sections(sections)
