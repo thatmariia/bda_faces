@@ -1,0 +1,5 @@
+{
+  "terminal.integrated.cwd": "${workspaceFolder}",
+  "r.useRenvLibPath": true,
+  "r.rmarkdown.knit.defaults.knitWorkingDirectory": "workspace root"
+}

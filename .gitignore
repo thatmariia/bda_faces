@@ -1,0 +1,16 @@
+# Competition data and generated outputs
+data/*
+!data/README.md
+output/*
+!output/.gitkeep
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.Renviron
+.DS_Store
+Rplots.pdf
+notebook.html
+notebook_files/
+notebook.knit.md
+notebook.utf8.md
