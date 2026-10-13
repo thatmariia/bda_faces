@@ -67,7 +67,14 @@ the implementation in exports. Add `fold="Label"` to make the code collapsible.
 For feature work, start with `R/features/features.R` and explain your method
 in `analysis/03_features.Rmd`. The function currently returns the original
 pixels. Its outputs, `features_train` and `features_test`, feed the tree and
-prediction sections. Rerun section 03 after editing it, then sections 04 and 05.
+prediction sections. After editing section 03, rerun the model and submission
+sections.
+
+Each model gets a function in `R/models/` and its own Rmd, like
+`analysis/05_tree.Rmd`. Use the tree function and Rmd as templates. Reuse the settings in `04_models.Rmd`, set a fixed seed,
+and give each fitted model a distinct name. Insert new model sections before
+model selection, renumbering later sections. Compare cross-validation results
+and choose `final_model` in `06_model_selection.Rmd`; submission uses that choice.
 
 ## Team workflow
 

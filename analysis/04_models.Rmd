@@ -1,0 +1,24 @@
+# Fitting models
+
+To find out which model gives the best trade-off between bias and variance, between
+accuracy and flexibility, one strategy is to fit both a flexible and a more rigid model
+and determine from the CV error which direction on the flexibility axis we should go to
+avoid overtraining.
+
+We'll consider classification trees and random forests. Random forests are probably the
+least prone to overtraining, and are considered one of the best "off-the-shelf" machine
+learning algorithms, in the sense that they require little expertise to apply and
+perform well without tuning. (That's not to say that tuning shouldn't be considered!)
+It's your Uncle Bob's favorite algorithm, so to speak.
+
+Use the same feature matrices and resampling settings for each candidate model.
+Keep each model's fit and results in its own section, using distinct object names.
+Set a fixed seed before each fit for repeatability.
+
+```{r classification-functions, code=readLines("R/evaluation/classification.R"), fold="Classification evaluation function", message=FALSE}
+source("R/evaluation/classification.R", local = TRUE, print.eval = TRUE)
+```
+
+```{r resampling-settings}
+control <- caret::trainControl("cv", 5, allowParallel = TRUE)
+```
