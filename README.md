@@ -67,7 +67,16 @@ the implementation in exports. Add `fold="Label"` to make the code collapsible.
 For feature work, start with `R/features/features.R` and explain your method
 in `analysis/03_features.Rmd`. The function currently returns the original
 pixels. Its outputs, `features_train` and `features_test`, feed the tree and
-prediction sections. Rerun section 03 after editing it, then sections 04 and 05.
+prediction sections. After editing section 03, rerun the model and submission
+sections.
+
+For model work, add a trainer file in `R/models/` and an entry in the `trainers`
+list in `R/models/models.R`. Each trainer accepts `x`, `y`, and `control` and
+returns a caret fit. `train_models()` returns fits and per-model timing in seconds;
+the Rmd stores these as `models` and `training$timings`.
+Model files are loaded and embedded automatically by `analysis/04_models.Rmd`;
+keep their top level limited to function definitions. Explain your models there,
+then choose `final_model` in `05_model_selection.Rmd` before submission.
 
 ## Team workflow
 

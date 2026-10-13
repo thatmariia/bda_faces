@@ -1,0 +1,8 @@
+# Model selection
+
+Choose a model using its cross-validation results and assign it to `final_model`.
+Explain your choice here.
+
+```{r select-model}
+final_model <- models$tree
+```
