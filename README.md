@@ -41,7 +41,7 @@ Run these from the repository root:
 Rscript scripts/run.R            # all sections
 Rscript scripts/run.R 02_pixels  # stop after this section
 Rscript -e 'rmarkdown::render("notebook.Rmd", output_dir = "output")'
-Rscript scripts/build_notebook.R # output/notebook.ipynb
+Rscript scripts/build_notebook.R # output/notebook.ipynb (suitable for kaggle)
 ```
 
 To work interactively in either editor, prepare earlier sections in your R session:
@@ -66,8 +66,7 @@ the implementation in exports. Add `fold="Label"` to make the code collapsible.
 
 ## Team workflow
 
-Start focused branches from the latest `main`. Give independent methods separate
-files, agree who edits shared files, and keep commits small with lowercase messages.
+Start focused branches from the latest `main`. Give independent methods separate files.
 Review changes through pull requests; coordinate conflicts with the affected author.
 
 ```sh
@@ -75,6 +74,6 @@ Rscript scripts/check_style.R --fix # format and lint
 Rscript scripts/check_style.R       # check without editing
 ```
 
-Before committing, run affected sections and rebuild the notebook. Keep data and
+Before pushing a commit, run affected sections and rebuild the notebook. Keep data and
 outputs out of commits. When changing dependencies, update and commit `renv.lock`
 with `renv::snapshot()`. Use only methods and packages allowed for your project.
