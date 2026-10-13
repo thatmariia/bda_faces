@@ -1,11 +1,8 @@
 # Feature construction
 
-We currently use the raw pixel intensities as features. Describe any features
-you construct here: what they measure, why you chose them, and how they are
-computed.
+Add features in individual files within `R/features/`.
+Wire them up in `R/features/features.R` and source that file here.
 
-Apply the same feature definition to training and test images, preserving image
-order and using matching feature columns.
 
 ```{r feature-functions, code=readLines("R/features/features.R"), fold="Feature functions"}
 source("R/features/features.R", local = TRUE)
