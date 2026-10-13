@@ -1,0 +1,82 @@
+# Emotional human faces
+
+Work in small R Markdown sections, keep reusable code in R files, and assemble
+one report or standalone notebook.
+
+## Layout
+
+```text
+analysis/          numbered Rmd sections, executed in filename order
+R/                 reusable functions by purpose:
+                   data, features, models, evaluation, visualization, submission
+scripts/           section discovery and execution
+setup.R            packages and input/output paths
+notebook.Rmd       complete report
+build_notebook.R   standalone notebook export
+renv.lock          shared package versions
+data/              local inputs; see data/README.md
+output/            generated files
+```
+
+## Setup
+
+Use the R version recorded in `renv.lock`. In RStudio, open the `.Rproj` file.
+In VS Code, open the repository folder, install the recommended
+[R extension](https://github.com/REditorSupport/vscode-R), and start
+**R: Create R terminal**. Then restore packages in the R console/terminal:
+
+```r
+install.packages("renv") # only if needed
+renv::restore()
+```
+
+On Windows, restore with `renv::restore(exclude = "doMC")`.
+Rendering also requires Pandoc; RStudio bundles it. Outside RStudio, check
+`rmarkdown::pandoc_available()` and [install Pandoc](https://pandoc.org/installing.html)
+if needed. Follow `data/README.md` for input placement. Data and outputs are ignored by Git.
+
+## Run and edit
+
+Run these from the repository root:
+
+```sh
+Rscript scripts/run.R            # all sections
+Rscript scripts/run.R 02_pixels  # stop after this section
+Rscript -e 'rmarkdown::render("notebook.Rmd", output_dir = "output")'
+Rscript build_notebook.R         # output/notebook.ipynb
+```
+
+To work interactively in either editor, prepare earlier sections in your R session:
+
+```r
+source("setup.R")
+source("scripts/report.R")
+run_sections(read_sections()[1:2])
+```
+
+Continue running chunks in subsequent Rmd files using the same session; variables
+remain available until R restarts. `source("scripts/run.R")` runs all sections in
+that session. Shell commands using `Rscript` start separate processes.
+Render `notebook.Rmd` for the complete report; individual sections depend on earlier ones.
+
+Add sections as `NN_name.Rmd`; unnumbered drafts are excluded. Keep short calls
+and explanations in Rmd files, and functions with roxygen comments in focused
+`R/` files.
+After editing a function file, source it again in your session.
+Use `code=readLines("R/path.R")` on a chunk containing its `source()` call to embed
+the implementation in exports. Add `fold="Label"` to make the code collapsible.
+
+## Team workflow
+
+Start focused branches from the latest `main`. Give independent methods separate
+files, agree who edits shared files, and keep commits small with lowercase messages.
+Review changes through pull requests; coordinate conflicts with the affected author.
+
+```sh
+Rscript check_style.R --fix  # format and lint
+Rscript check_style.R        # check without editing
+```
+
+Before committing, run affected sections and rebuild the notebook. Keep data and
+outputs out of commits. When changing dependencies, update and commit `renv.lock`
+with `renv::snapshot()`. Use only methods and packages allowed for your project.
