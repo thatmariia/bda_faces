@@ -8,7 +8,7 @@ source("R/submission/write_submission.R", local = TRUE, print.eval = TRUE)
 
 ```{r submission-2}
 ## Make predictions
-predictions <- predict(fittree, x_test, type = "raw")
+predictions <- predict(fittree, features_test, type = "raw")
 
 ## Write to file
 submission_file <- file.path(output_dir, "submission.csv")

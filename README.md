@@ -64,6 +64,11 @@ After editing a function file, source it again in your session.
 Use `code=readLines("R/path.R")` on a chunk containing its `source()` call to embed
 the implementation in exports. Add `fold="Label"` to make the code collapsible.
 
+For feature work, start with `R/features/features.R` and explain your method
+in `analysis/04_features.Rmd`. The function currently returns the original
+pixels. Its outputs, `features_train` and `features_test`, feed the tree and
+prediction sections. Rerun section 04 after editing it, then sections 05 and 06.
+
 ## Team workflow
 
 Start focused branches from the latest `main`. Give independent methods separate files.

@@ -36,7 +36,7 @@ control <- caret::trainControl("cv", 5, allowParallel = TRUE)
 tt <- Sys.time() # Measure execution time
 
 ## Fit a CART using 5-fold cross-validation to tune the complexity parameter
-fittree <- fit_classification_tree(x_train, y, control, cp = 0.02)
+fittree <- fit_classification_tree(features_train, y, control, cp = 0.02)
 fittree
 
 ## Report execution time
@@ -66,7 +66,7 @@ Cross-validation estimates performance on images held out from each fit.
 
 ```{r evaluate-tree}
 ## Check performance on training set
-training_predictions <- predict(fittree, x_train, type = "raw")
+training_predictions <- predict(fittree, features_train, type = "raw")
 training_performance <- evaluate_classification(training_predictions, y)
 training_performance
 ```
