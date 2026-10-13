@@ -17,8 +17,8 @@ knitr::opts_hooks$set(fold = function(options) {
 We will recognize emotions from photographs of facial expressions. We start
 with pixel intensities as features and fit a classification tree.
 
-```{r setup, message=FALSE, code=readLines("setup.R"), fold="Packages and paths"}
-source("setup.R", local = TRUE)
+```{r setup, message=FALSE, code=readLines("scripts/setup.R"), fold="Packages and paths"}
+source("scripts/setup.R", local = TRUE)
 ```
 
 ```{r sections, child=read_sections()}
