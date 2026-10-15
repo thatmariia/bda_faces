@@ -3,7 +3,7 @@ source("scripts/report.R")
 read_sections()
 ipynb <- rmarkdown::output_format(
   knitr = rmarkdown::knitr_options(
-    opts_chunk = list(eval = FALSE),
+    opts_chunk = list(eval = FALSE, echo = TRUE, include = TRUE),
     opts_hooks = list(child = function(options) {
       options$eval <- TRUE
       options
@@ -28,6 +28,9 @@ notebook_file <- rmarkdown::render(
   envir = new.env(parent = globalenv()), quiet = TRUE
 )
 notebook <- jsonlite::read_json(notebook_file)
+if (!any(vapply(notebook$cells, function(cell) identical(cell$cell_type, "code"), logical(1)))) {
+  stop("Notebook export contains no code cells.")
+}
 notebook$cells <- lapply(notebook$cells, function(cell) {
   if ("hide-input" %in% unlist(cell$metadata$tags)) {
     cell$metadata[["_kg_hide-input"]] <- TRUE
