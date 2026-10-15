@@ -13,6 +13,6 @@ cat("Selected model:", model_comparison$model[1], "\n")
 source("R/visualization/importance.R", local = TRUE, print.eval = TRUE)
 ```
 
-```{r feature-importance}
+```{r}
 plot_feature_importance(final_model, top = 30)
 ```
