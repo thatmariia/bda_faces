@@ -7,7 +7,9 @@
 #' @return List with named model fits in models and elapsed seconds in timings.
 train_models <- function(x, y, control, seed = 2023) {
   trainers <- list(
-    tree = fit_classification_tree
+    tree = fit_classification_tree,
+    pca_tree = fit_pca_classification_tree,
+    forest = fit_random_forest
   )
   models <- list()
   timings <- numeric()
