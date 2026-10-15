@@ -12,11 +12,9 @@ gradients <- function(img) {
   cols <- 2:(nc - 1)
 
   # Centered differences on interior pixels
-  gx <- (img[rows, cols + 1, drop = FALSE] -
-         img[rows, cols - 1, drop = FALSE]) / 2
+  gx <- (img[rows, cols + 1, drop = FALSE] - img[rows, cols - 1, drop = FALSE]) / 2
 
-  gy <- (img[rows + 1, cols, drop = FALSE] -
-         img[rows - 1, cols, drop = FALSE]) / 2
+  gy <- (img[rows + 1, cols, drop = FALSE] - img[rows - 1, cols, drop = FALSE]) / 2
 
   # Gradient magnitude
   mag <- sqrt(gx^2 + gy^2)
