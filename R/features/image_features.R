@@ -24,6 +24,7 @@ image_features <- function(
 ) {
     img <- as_matrix(x)
     v <- image_variants(img, facial_rois)
+    flat_v <- c(list(intensity = v$regions), v$edges, v$gradients)
 
     # features
     c(
@@ -38,8 +39,8 @@ image_features <- function(
     ),
 
     dark_share = apply_to_all(
-        function(r) dark_share(img, r),
-        v
+        function(r) sum(r < quantile(r, 0.3)) / length(r),
+        flat_v
     )
   )
 }
