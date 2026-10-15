@@ -1,6 +1,7 @@
 # Fitting models
 
-We'll consider classification trees and random forests. Random forests are probably the
+We'll consider classification trees, random forests, and linear and radial SVMs.
+Random forests are probably the
 least prone to overtraining, and are considered one of the best "off-the-shelf" machine
 learning algorithms, in the sense that they require little expertise to apply and
 perform well without tuning. (That's not to say that tuning shouldn't be considered!)
@@ -27,7 +28,6 @@ control <- caret::trainControl("cv", 5, index = folds, allowParallel = TRUE)
 cat("Training models...\n")
 training <- train_models(features_train, y, control, seed = 2023)
 models <- training$models
-models
 
 training$timings
 ```
