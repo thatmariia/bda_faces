@@ -1,31 +1,45 @@
+#' Apply a function to prepared variants and their regions.
+#' @param f Function returning numeric measurements.
+#' @param v Named list of variants, each containing img and ROI matrices.
+#' @param regions Whether to include ROI crops.
+#' @return Named numeric feature vector.
+apply_to_all <- function(f, v, regions = TRUE) {
+  unlist(lapply(v, function(variant) {
+    if (!regions) {
+      variant <- variant["img"]
+    }
+
+    lapply(variant, f)
+  }), use.names = TRUE)
+}
 
 #' Construct features for a single image.
 #'
 #' @param x Pixel matrix with one image per row.
+#' @param edge_threshold Threshold for edge detection.
 #' @return Feature vector for the image; currently the original pixels.
 image_features <- function(
     x,
-    threshold = 0.0625
+    edge_threshold = 0.0625
 ) {
     img <- as_matrix(x)
-    rois <- select_rois(img, facial_rois)
-
-    edges <- image_edges(img)
-    edges_rois <- lapply(edges, function(edge) select_rois(edge, facial_rois))
+    v <- image_variants(img, facial_rois)
 
     # features
     c(
-        # frey & slate - full image
-        unlist(lapply(edges, function(edge) {
-            FreySlateFeatures(edge < threshold)
-        }), use.names = TRUE),
+    hog = unlist(
+        Map(hog, v$gradients$mag, v$gradients$theta),
+        use.names = TRUE
+    ),
 
-        # frey & slate - rois
-        unlist(lapply(edges_rois, function(edge_rois) {
-            unlist(lapply(edge_rois, function(edge_roi) {
-                FreySlateFeatures(edge_roi < threshold)
-            }), use.names = TRUE)
-        }), use.names = TRUE)
+    frey_slate = apply_to_all(
+        function(r) FreySlateFeatures(r < edge_threshold),
+        v$edges
+    ),
 
+    dark_share = apply_to_all(
+        function(r) dark_share(img, r),
+        v
     )
+  )
 }
