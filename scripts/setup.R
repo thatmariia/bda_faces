@@ -1,6 +1,7 @@
 library(tidyverse)
 library(png)
 library(caret, warn.conflicts = FALSE)
+library(ranger)
 options(width = 100)
 
 # Locate the same ckplus directory locally and in Kaggle's mounted inputs.
@@ -22,10 +23,10 @@ dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 ## Use multiple cores whenever possible
 n_cores <- if (.Platform$OS.type == "windows") {
-    1
+  1
 } else if (on_kaggle) {
-    parallel::detectCores()
+  parallel::detectCores()
 } else {
-    max(1, parallel::detectCores() - 1)
+  max(1, parallel::detectCores() - 1)
 }
 if (n_cores > 1) doMC::registerDoMC(cores = n_cores) else foreach::registerDoSEQ()
