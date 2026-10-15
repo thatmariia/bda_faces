@@ -21,8 +21,11 @@ output_dir <- if (on_kaggle) "/kaggle/working" else here::here("output")
 dir.create(output_dir, showWarnings = FALSE, recursive = TRUE)
 
 ## Use multiple cores whenever possible
-if (.Platform$OS.type == "unix" && requireNamespace("doMC", quietly = TRUE)) {
-  doMC::registerDoMC(cores = 4)
+n_cores <- if (.Platform$OS.type == "windows") {
+    1
+} else if (on_kaggle) {
+    parallel::detectCores()
 } else {
-  foreach::registerDoSEQ()
+    max(1, parallel::detectCores() - 1)
 }
+if (n_cores > 1) doMC::registerDoMC(cores = n_cores) else foreach::registerDoSEQ()
