@@ -17,7 +17,6 @@ ipynb <- rmarkdown::output_format(
         return(paste0("\n::: {.cell .code}\n", cell))
       }
       paste0(
-        "\n*", options$fold, "*\n\n",
         "\n::: {.cell .code tags=\"[\\\"hide-input\\\"]\"}\n", cell
       )
     })
