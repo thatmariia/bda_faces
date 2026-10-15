@@ -9,3 +9,29 @@ source("R/data/read_images.R", local = TRUE, print.eval = TRUE)
 ```{r data-2}
 image_files <- find_image_files(data_dir)
 ```
+
+## Data info
+
+Where do the data come from? (To which population will results generalize?)
+
+> The used grayscale photos are from CK+ database. The data includes 4 labeled emotions: anger, happiness, sadness, and surprise.
+> The images are cropped to 48×48 pixels and converted to grayscale.
+> The original source study recorded posed expressions from adults aged 18–50,
+> mostly female (69%) and Euro-American (81%)
+> ([Lucey et al., 2010](https://www.pitt.edu/~jeffcohn/CVPR2010_CK%2B2.pdf)).
+> We expect the results to transfer to the similar posed expressions and photographic conditions.
+> It is doubtful that the performance will generalize to images from uncontrolled conditions or other populations.
+
+What are candidate machine learning methods? (models? features?)
+
+> Classification trees and random forests, with PCA as an optional way to reduce the number of features.
+> Raw pixels provide a simple baseline.
+> Additional features should describe facial patterns.
+> Other candidates (for later) include KNN, LDA, and SVM.
+
+What is the Bayes' error bound? (Any guestimate from scientific literature or web resources?)
+
+> Couldn't find a verified source for the Bayes error bound for this dataset.
+> [Lucey et al. (2010)](https://www.pitt.edu/~jeffcohn/CVPR2010_CK%2B2.pdf) report classifier
+> performance on seven emotions using a neutral expression as a reference,
+> but it does not constitute a Bayes-error estimate for our dataset with 4 labels.

@@ -14,6 +14,8 @@ train_models <- function(x, y, control, seed = 2023) {
   models <- list()
   timings <- numeric()
   for (name in names(trainers)) {
+    cat("Training model:", name, "\n")
+    flush.console()
     set.seed(seed)
     tt <- Sys.time() # Measure execution time
     models[[name]] <- trainers[[name]](x, y, control)

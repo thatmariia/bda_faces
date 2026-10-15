@@ -77,6 +77,11 @@ for (file in list.files("R/features", pattern = "\\.R$", full.names = TRUE)) {
 ```
 
 ```{r extract-features}
+cat("Extracting features from training set...\n")
 features_train <- features(x_train)
+```
+
+```{r extract-features-test}
+cat("Extracting features from test set...\n")
 features_test <- features(x_test)
 ```

@@ -24,6 +24,7 @@ control <- caret::trainControl("cv", 5, index = folds, allowParallel = TRUE)
 ```
 
 ```{r fit-models}
+cat("Training models...\n")
 training <- train_models(features_train, y, control, seed = 2023)
 models <- training$models
 models
@@ -48,6 +49,7 @@ it doesn't classify the training set accurately, how can you expect better resul
 the test set? This seemingly obvious point is often overlooked—surprisingly.
 
 ```{r evaluate-models}
+cat("Evaluating models on training set...\n")
 training_performance <- lapply(models, function(model) {
   predictions <- predict(model, features_train, type = "raw")
   evaluate_classification(predictions, y)
