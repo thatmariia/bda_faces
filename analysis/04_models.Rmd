@@ -33,19 +33,18 @@ training <- train_models(features_train, y, control, seed = 2023)
 models <- training$models
 models
 
-## Report execution time
 training$timings
 ```
 
 ```{r compare-models}
-## Compare models on the same folds
+# Compare models on the same folds
 resampling <- caret::resamples(models)
 model_comparison <- summary(resampling)$statistics$Accuracy |>
   as.data.frame() |>
-  tibble::rownames_to_column("model") |>
-  dplyr::select(model, accuracy = Mean) |>
-  dplyr::left_join(training$timings, by = "model") |>
-  dplyr::arrange(dplyr::desc(accuracy))
+  rownames_to_column("model") |>
+  select(model, accuracy = Mean) |>
+  left_join(training$timings, by = "model") |>
+  arrange(dplyr::desc(accuracy))
 model_comparison
 ```
 
@@ -54,7 +53,6 @@ it doesn't classify the training set accurately, how can you expect better resul
 the test set? This seemingly obvious point is often overlooked—surprisingly.
 
 ```{r evaluate-models}
-## Check performance on training set
 training_performance <- lapply(models, function(model) {
   predictions <- predict(model, features_train, type = "raw")
   evaluate_classification(predictions, y)
