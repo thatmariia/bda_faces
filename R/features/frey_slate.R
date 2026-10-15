@@ -46,3 +46,15 @@ FreySlateFeatures <- function(X) {
   x2
 }
 # nolint end: object_name_linter.
+
+#' Compute Frey and Slate summaries for a region's edge maps.
+#' @param region Prepared region containing horizontal, vertical, and diagonal edges.
+#' @param threshold Threshold for converting edge differences to binary maps.
+#' @return Named numeric vector; undefined summaries of degenerate masks are zero.
+frey_slate_features <- function(region, threshold = 0.0625) {
+  unlist(lapply(region$edges, function(edge) {
+    values <- suppressWarnings(FreySlateFeatures(edge < threshold))
+    values[!is.finite(values)] <- 0
+    values
+  }), use.names = TRUE)
+}
