@@ -74,11 +74,16 @@ hog <- function(magnitude, angle, grid = 4, bins = 8) {
   features
 }
 
-#' Compute HOG measurements from a prepared region.
-#' @param region Prepared region containing gradient magnitude and angle maps.
-#' @param grid Number of cells per direction, or a row-column pair.
-#' @param bins Number of orientation bins.
-#' @return Named numeric vector of HOG measurements.
-hog_features <- function(region, grid = 4, bins = 8) {
-  hog(region$gradients$mag, region$gradients$theta, grid = grid, bins = bins)
+#' Compute HOG features at several spatial scales.
+#' @param regions Named prepared regions, including full.
+#' @return Named numeric vector of HOG features.
+hog_features <- function(regions) {
+  regional <- regions[names(regions) != "full"]
+
+  unlist(list(
+    grid4 = lapply(regions, hog_features, grid = 4),
+    full3 = hog_features(regions$full, grid = 3),
+    full6 = hog_features(regions$full, grid = 6),
+    regional2 = lapply(regional, hog_features, grid = 2)
+  ), use.names = TRUE)
 }

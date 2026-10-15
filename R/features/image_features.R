@@ -10,7 +10,7 @@ image_features <- function(x, edge_threshold = 0.0625) {
 
   # Select the regions and settings for each feature family here.
   groups <- list(
-    hog = lapply(regions, hog_features),
+    hog = hog_features(regions),
     frey_slate = lapply(regions, frey_slate_features, threshold = edge_threshold),
     appearance = lapply(
       regions[c("full", "mouth", "nose")], appearance_features,
