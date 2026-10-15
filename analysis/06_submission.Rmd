@@ -1,7 +1,5 @@
 # Formatting your submission file
 
-To format your submission file, you can use the following code:
-
 ```{r submission-1, code=readLines("R/submission/write_submission.R"), fold="Submission function", message=FALSE}
 source("R/submission/write_submission.R", local = TRUE, print.eval = TRUE)
 ```

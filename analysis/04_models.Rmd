@@ -1,10 +1,5 @@
 # Fitting models
 
-To find out which model gives the best trade-off between bias and variance, between
-accuracy and flexibility, one strategy is to fit both a flexible and a more rigid model
-and determine from the CV error which direction on the flexibility axis we should go to
-avoid overtraining.
-
 We'll consider classification trees and random forests. Random forests are probably the
 least prone to overtraining, and are considered one of the best "off-the-shelf" machine
 learning algorithms, in the sense that they require little expertise to apply and
