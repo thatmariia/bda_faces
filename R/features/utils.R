@@ -12,5 +12,5 @@ as_matrix <- function(
     ncol = sqrt(length(x)),
     byrow = FALSE
 ) {
-    x <- as.matrix(x, nrow = nrow, ncol = ncol, byrow = byrow)
+    matrix(x, nrow = nrow, ncol = ncol, byrow = byrow)
 }
