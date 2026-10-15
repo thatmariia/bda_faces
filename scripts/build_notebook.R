@@ -9,6 +9,9 @@ ipynb <- rmarkdown::output_format(
       options
     }),
     knit_hooks = list(source = function(x, options) {
+      if (!is.null(options$fold)) {
+        x <- c(paste0("# ", options$fold), "", x)
+      }
       cell <- paste0("```r\n", paste(x, collapse = "\n"), "\n```\n:::\n")
       if (is.null(options$fold)) {
         return(paste0("\n::: {.cell .code}\n", cell))
