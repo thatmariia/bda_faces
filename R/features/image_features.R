@@ -1,46 +1,29 @@
-#' Apply a function to prepared variants and their regions.
-#' @param f Function returning numeric measurements.
-#' @param v Named list of variants, each containing img and ROI matrices.
-#' @param regions Whether to include ROI crops.
-#' @return Named numeric feature vector.
-apply_to_all <- function(f, v, regions = TRUE) {
-  unlist(lapply(v, function(variant) {
-    if (!regions) {
-      variant <- variant["img"]
-    }
-
-    lapply(variant, f)
-  }), use.names = TRUE)
-}
-
 #' Construct features for a single image.
 #'
-#' @param x Pixel matrix with one image per row.
-#' @param edge_threshold Threshold for edge detection.
-#' @return Feature vector for the image; currently the original pixels.
-image_features <- function(
-    x,
-    edge_threshold = 0.0625
-) {
-    img <- as_matrix(x)
-    v <- image_variants(img, facial_rois)
-    flat_v <- c(list(intensity = v$regions), v$edges, v$gradients)
+#' @param x Vector of pixel intensities for one image.
+#' @param edge_threshold Threshold for the Frey and Slate binary maps.
+#' @return Numeric vector named by feature family, region, and measurement.
+image_features <- function(x, edge_threshold = 0.0625) {
+  v <- image_variants(as_matrix(x))
+  regions <- v$regions
+  cutoff <- unname(quantile(regions$full$img, 0.3))
 
-    # features
-    c(
-    hog = unlist(
-        Map(hog, v$gradients$mag, v$gradients$theta),
-        use.names = TRUE
+  # Select the regions and settings for each feature family here.
+  groups <- list(
+    hog = lapply(regions, hog_features),
+    frey_slate = lapply(regions, frey_slate_features, threshold = edge_threshold),
+    appearance = lapply(
+      regions[c("full", "mouth", "nose")], appearance_features,
+      cutoff = cutoff
     ),
-
-    frey_slate = apply_to_all(
-        function(r) FreySlateFeatures(r < edge_threshold),
-        v$edges
+    gradient = lapply(
+      regions[c("full", "mouth", "nose")], gradient_features
     ),
-
-    dark_share = apply_to_all(
-        function(r) sum(r < quantile(r, 0.3)) / length(r),
-        flat_v
-    )
+    projection = lapply(regions[c("mouth", "nose")], projection_features),
+    contrast = lapply(regions[c("mouth", "nose")], contrast_features),
+    symmetry = lapply(regions[c("mouth", "nose")], symmetry_features),
+    relationships = relationship_features(regions)
   )
+
+  unlist(groups, use.names = TRUE)
 }
