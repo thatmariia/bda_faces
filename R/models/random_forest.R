@@ -11,6 +11,7 @@ fit_random_forest <- function(x, y, control, trees = 500) {
       mtry = floor(sqrt(ncol(x))), splitrule = "gini", min.node.size = 10
     ),
     num.trees = trees,
-    num.threads = 1 # Cross-validation parallelizes the fits.
+    num.threads = 1,
+    importance = "impurity"
   )
 }
