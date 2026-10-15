@@ -11,9 +11,6 @@ learning algorithms, in the sense that they require little expertise to apply an
 perform well without tuning. (That's not to say that tuning shouldn't be considered!)
 It's your Uncle Bob's favorite algorithm, so to speak.
 
-Add model trainers in individual files within `R/models/`.
-Wire them up in `R/models/models.R`; model files are loaded below.
-
 ```{r model-functions, code=unlist(lapply(list.files("R/models", pattern="\\.R$", full.names=TRUE), readLines)), fold="Model fitting functions", message=FALSE}
 for (file in list.files("R/models", pattern = "\\.R$", full.names = TRUE)) {
   source(file, local = TRUE)
@@ -25,7 +22,10 @@ source("R/evaluation/classification.R", local = TRUE, print.eval = TRUE)
 ```
 
 ```{r resampling-settings}
-control <- caret::trainControl("cv", 5, allowParallel = TRUE)
+set.seed(2023)
+subjects <- sub("_.*", "", basename(rownames(x_train)))
+folds <- caret::groupKFold(subjects, k = 5)
+control <- caret::trainControl("cv", 5, index = folds, allowParallel = TRUE)
 ```
 
 ```{r fit-models}
@@ -37,25 +37,17 @@ models
 training$timings
 ```
 
-## Classification tree
-
-As an example, here we fit a classification tree, using the pixel based approach.
-
-```{r tree-3, code=readLines("R/evaluation/tree.R"), fold="Tree plotting function", message=FALSE}
-source("R/evaluation/tree.R", local = TRUE, print.eval = TRUE)
+```{r compare-models}
+## Compare models on the same folds
+resampling <- caret::resamples(models)
+model_comparison <- summary(resampling)$statistics$Accuracy |>
+  as.data.frame() |>
+  tibble::rownames_to_column("model") |>
+  dplyr::select(model, accuracy = Mean) |>
+  dplyr::left_join(training$timings, by = "model") |>
+  dplyr::arrange(dplyr::desc(accuracy))
+model_comparison
 ```
-
-```{r show-tree}
-## Graphical visualization of the decision tree
-options(repr.plot.width = 14, repr.plot.height = 8)
-layout(1)
-plot_tree(models$tree)
-
-## Textual visualization of the decision tree
-models$tree$finalModel
-```
-
-The cross validated accuracy estimate is around 55%.
 
 As always, it's useful to check how well the algorithm performs on the training set: If
 it doesn't classify the training set accurately, how can you expect better results on
