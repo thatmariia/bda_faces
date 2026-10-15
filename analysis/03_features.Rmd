@@ -1,11 +1,59 @@
 # Feature construction
 
-Add features in individual files within `R/features/`.
-Wire them up in `R/features/features.R` and source that file here.
+In addition to the original images from the dataset, we also construct a number of *variants* of the images,
+which are intended to highlight certain aspects of the images.
+These variants are constructed using various image processing techniques,
+such as edge detection and gradient computation.
 
+```{r feature-functions, code=unlist(lapply(list.files("R/variants", pattern="\\.R$", full.names=TRUE), readLines)), fold="Variants functions"}
+for (file in list.files("R/variants", pattern = "\\.R$", full.names = TRUE)) {
+  source(file, local = TRUE)
+}
+```
 
-```{r feature-functions, code=readLines("R/features/features.R"), fold="Feature functions"}
-source("R/features/features.R", local = TRUE)
+```{r code=readLines("R/visualization/images.R"), fold="Image plotting function", message=FALSE}
+source("R/visualization/images.R", local = TRUE, print.eval = TRUE)
+```
+
+```{r show-variants, fig.width=12, fig.height=6}
+v <- image_variants(as_matrix(x_train[1, ]))
+
+maps <- c(
+  list(original = v$regions$img),
+  lapply(v$edges, `[[`, "img"),
+  lapply(v$gradients, `[[`, "img")
+)
+
+old_par <- par(mfrow = c(2, 4), mar = rep(0, 4))
+
+for (name in names(maps)) {
+  map <- maps[[name]]
+  as_image(map, nr = nrow(map))
+  legend("top", legend = name, bg = "white")
+}
+
+par(old_par)
+```
+
+We also define a number of *regions of interest* (ROIs) in the images
+in order to focus on specific parts of the face, such as the eyes, nose, and mouth.
+
+```{r code=readLines("R/visualization/rois.R"), fold="ROI plotting function", message=FALSE}
+source("R/visualization/rois.R", local = TRUE, print.eval = TRUE)
+```
+
+```{r}
+facial_rois
+plot_image_rois(as_matrix(x_train[1, ]), facial_rois)
+```
+
+Now, for relevant combinations of image variants and ROIs,
+we can compute a number of *features* that summarize the information in the images.
+
+```{r feature-functions, code=unlist(lapply(list.files("R/features", pattern="\\.R$", full.names=TRUE), readLines)), fold="Feature functions"}
+for (file in list.files("R/features", pattern = "\\.R$", full.names = TRUE)) {
+  source(file, local = TRUE)
+}
 ```
 
 ```{r extract-features}
