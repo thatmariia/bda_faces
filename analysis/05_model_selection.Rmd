@@ -9,7 +9,7 @@ cat("Selected model:", model_comparison$model[1], "\n")
 
 ## Important features
 
-```{r classification-functions, code=readLines("R/visualization/importance.R"), fold="Feature importance", message=FALSE}
+```{r feature-importance, code=readLines("R/visualization/importance.R"), fold="Feature importance", message=FALSE}
 source("R/visualization/importance.R", local = TRUE, print.eval = TRUE)
 ```
 
