@@ -4,5 +4,6 @@ Choose a model using its cross-validation results and assign it to `final_model`
 Explain your choice here.
 
 ```{r select-model}
-final_model <- models$tree
+final_model <- models[[model_comparison$model[1]]]
+final_model
 ```
