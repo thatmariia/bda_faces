@@ -5,7 +5,8 @@
 features <- function(x) {
   rows <- parallel::mclapply(
     seq_len(nrow(x)),
-    function(i) image_features(x[i, ])
+    function(i) image_features(x[i, ]),
+    mc.cores = n_cores
   )
   fs <- do.call(rbind, rows)
   rownames(fs) <- rownames(x)
