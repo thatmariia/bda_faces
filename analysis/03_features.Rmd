@@ -1,11 +1,13 @@
 # Feature construction
 
+## Variants
+
 In addition to the original images from the dataset, we also construct a number of *variants* of the images,
 which are intended to highlight certain aspects of the images.
 These variants are constructed using various image processing techniques,
 such as edge detection and gradient computation.
 
-```{r feature-functions, code=unlist(lapply(list.files("R/variants", pattern="\\.R$", full.names=TRUE), readLines)), fold="Variants functions"}
+```{r variant-functions, code=unlist(lapply(list.files("R/variants", pattern="\\.R$", full.names=TRUE), readLines)), fold="Variants functions"}
 for (file in list.files("R/variants", pattern = "\\.R$", full.names = TRUE)) {
   source(file, local = TRUE)
 }
@@ -19,9 +21,9 @@ source("R/visualization/images.R", local = TRUE, print.eval = TRUE)
 v <- image_variants(as_matrix(x_train[1, ]))
 
 maps <- c(
-  list(original = v$regions$img),
-  lapply(v$edges, `[[`, "img"),
-  lapply(v$gradients, `[[`, "img")
+  list(original = v$regions$full$img),
+  v$regions$full$edges,
+  v$regions$full$gradients
 )
 
 old_par <- par(mfrow = c(2, 4), mar = rep(0, 4))
@@ -35,6 +37,8 @@ for (name in names(maps)) {
 par(old_par)
 ```
 
+## ROIs
+
 We also define a number of *regions of interest* (ROIs) in the images
 in order to focus on specific parts of the face, such as the eyes, nose, and mouth.
 
@@ -46,6 +50,8 @@ source("R/visualization/rois.R", local = TRUE, print.eval = TRUE)
 facial_rois
 plot_image_rois(as_matrix(x_train[1, ]), facial_rois)
 ```
+
+## Features
 
 Now, for relevant combinations of image variants and ROIs,
 we can compute a number of *features* that summarize the information in the images.
