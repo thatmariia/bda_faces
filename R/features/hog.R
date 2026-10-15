@@ -1,9 +1,8 @@
-
 #' Compute Histogram of Oriented Gradients (HOG) features for an image.
 #' LLM src=https://chatgpt.com/share/6ad037d4-6794-83ed-b0c8-26a083b764cf
 #' @param magnitude Matrix of gradient magnitudes.
 #' @param angle Matrix of gradient angles (in radians).
-#' @param grid Vector of length 2 specifying the number of cells in the vertical and horizontal directions.
+#' @param grid Number of cells per direction, or a vertical-horizontal pair.
 #' @param bins Number of orientation bins for the histogram.
 #' @return Vector of HOG features for the image.
 hog <- function(magnitude, angle, grid = 4, bins = 8) {
@@ -42,7 +41,6 @@ hog <- function(magnitude, angle, grid = 4, bins = 8) {
 
   for (r in seq_len(grid[1])) {
     for (c in seq_len(grid[2])) {
-
       cell_bins <- bin_index[
         row_groups == r, col_groups == c, drop = FALSE
       ]
@@ -74,4 +72,13 @@ hog <- function(magnitude, angle, grid = 4, bins = 8) {
   }
 
   features
+}
+
+#' Compute HOG measurements from a prepared region.
+#' @param region Prepared region containing gradient magnitude and angle maps.
+#' @param grid Number of cells per direction, or a row-column pair.
+#' @param bins Number of orientation bins.
+#' @return Named numeric vector of HOG measurements.
+hog_features <- function(region, grid = 4, bins = 8) {
+  hog(region$gradients$mag, region$gradients$theta, grid = grid, bins = bins)
 }
