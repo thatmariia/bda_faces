@@ -23,10 +23,11 @@ v <- image_variants(as_matrix(x_train[1, ]))
 maps <- c(
   list(original = v$regions$full$img),
   v$regions$full$edges,
-  v$regions$full$gradients
+  v$regions$full$gradients,
+  v$regions$full$gabor
 )
 
-old_par <- par(mfrow = c(2, 4), mar = rep(0, 4))
+old_par <- par(mfrow = c(4, 4), mar = rep(0, 4))
 
 for (name in names(maps)) {
   map <- maps[[name]]
