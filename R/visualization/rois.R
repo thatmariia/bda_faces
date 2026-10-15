@@ -8,93 +8,88 @@
 #' @param frame_alpha Transparency of the ROI frames.
 #' @return A ggplot object with the image and ROIs.
 plot_image_rois <- function(
-    image,
-    rois,
-    show_labels = TRUE,
-    label_size = 3,
-    frame_size = 0.7,
-    frame_alpha = 1
+  image,
+  rois,
+  show_labels = TRUE,
+  label_size = 3,
+  frame_size = 0.7,
+  frame_alpha = 1
 ) {
-    # Load image if a file path is provided
-    if (is.character(image) && length(image) == 1) {
-        image <- png::readPNG(image)
-    }
+  # Load image if a file path is provided
+  if (is.character(image) && length(image) == 1) {
+    image <- png::readPNG(image)
+  }
 
-    # Image dimensions
-    img_height <- dim(image)[1]
-    img_width  <- dim(image)[2]
+  # Image dimensions
+  img_height <- dim(image)[1]
+  img_width <- dim(image)[2]
 
-    # Convert image to raster
-    img_raster <- as.raster(image)
+  # Convert image to raster
+  img_raster <- as.raster(image)
 
-    # ROI coordinates
-    rois <- rois %>%
-        mutate(
-        x_center = (x_start + x_end) / 2,
-        y_center = (y_start + y_end) / 2
-        )
+  # ROI coordinates
+  rois <- rois |>
+    mutate(
+      x_center = (x_start + x_end) / 2,
+      y_center = (y_start + y_end) / 2
+    )
 
-    # Plot image
-    p <- ggplot() +
-        annotation_raster(
-        img_raster,
-        xmin = 0,
-        xmax = img_width,
-        ymin = img_height,
-        ymax = 0
-        ) +
+  # Plot image
+  p <- ggplot() +
+    annotation_raster(
+      img_raster,
+      xmin = 0,
+      xmax = img_width,
+      ymin = img_height,
+      ymax = 0
+    ) +
 
-        # ROI frames
-        geom_rect(
+    # ROI frames
+    geom_rect(
+      data = rois,
+      aes(
+        xmin = x_start,
+        xmax = x_end,
+        ymin = y_start,
+        ymax = y_end,
+        color = region
+      ),
+      fill = NA,
+      linewidth = frame_size,
+      alpha = frame_alpha
+    ) +
+    scale_y_reverse(
+      limits = c(img_height, 0),
+      expand = c(0, 0)
+    ) +
+    scale_x_continuous(
+      limits = c(0, img_width),
+      expand = c(0, 0)
+    ) +
+    coord_fixed() +
+    theme_void() +
+    theme(
+      legend.position = "none"
+    )
+
+  # Add labels
+  if (show_labels) {
+    p <- p +
+      geom_label(
         data = rois,
         aes(
-            xmin = x_start,
-            xmax = x_end,
-            ymin = y_start,
-            ymax = y_end,
-            color = region
+          x = x_center,
+          y = y_start,
+          label = region,
+          color = region
         ),
-        fill = NA,
-        linewidth = frame_size,
-        alpha = frame_alpha
-        ) +
+        fill = "black",
+        label.size = 0,
+        size = label_size,
+        vjust = 1.1,
+        show.legend = FALSE
+      )
+  }
 
-        scale_y_reverse(
-        limits = c(img_height, 0),
-        expand = c(0, 0)
-        ) +
-
-        scale_x_continuous(
-        limits = c(0, img_width),
-        expand = c(0, 0)
-        ) +
-
-        coord_fixed() +
-
-        theme_void() +
-
-        theme(
-        legend.position = "none"
-        )
-
-    # Add labels
-    if (show_labels) {
-        p <- p +
-        geom_label(
-            data = rois,
-            aes(
-            x = x_center,
-            y = y_start,
-            label = region,
-            color = region
-            ),
-            fill = "black",
-            label.size = 0,
-            size = label_size,
-            vjust = 1.1,
-            show.legend = FALSE
-        )
-    }
-
-    return(p)
+  p
 }
