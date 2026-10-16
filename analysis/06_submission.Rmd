@@ -1,19 +1,20 @@
 # Formatting your submission file
 
-To format your submission file, you can use the following code:
-
 ```{r submission-1, code=readLines("R/submission/write_submission.R"), fold="Submission function", message=FALSE}
 source("R/submission/write_submission.R", local = TRUE, print.eval = TRUE)
 ```
 
 ```{r submission-2}
-## Make predictions
+cat("Writing submission file...\n")
+
+# Make predictions
+set.seed(2023)
 predictions <- predict(final_model, features_test, type = "raw")
 
-## Write to file
+# Write to file
 submission_file <- file.path(output_dir, "submission.csv")
 submission <- write_submission(predictions, rownames(x_test), submission_file)
 
-## Check result
+# Check result
 cat(readLines(submission_file, n = 20), sep = "\n")
 ```

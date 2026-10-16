@@ -1,14 +1,87 @@
 # Feature construction
 
-Add features in individual files within `R/features/`.
-Wire them up in `R/features/features.R` and source that file here.
+## Variants
+
+In addition to the original images from the dataset, we also construct a number of *variants* of the images,
+which are intended to highlight certain aspects of the images.
+These variants are constructed using various image processing techniques,
+such as edge detection and gradient computation.
+
+```{r variant-functions, code=unlist(lapply(list.files("R/variants", pattern="\\.R$", full.names=TRUE), readLines)), fold="Variants functions"}
+for (file in list.files("R/variants", pattern = "\\.R$", full.names = TRUE)) {
+  source(file, local = TRUE)
+}
+```
+
+```{r code=readLines("R/visualization/images.R"), fold="Image plotting function", message=FALSE}
+source("R/visualization/images.R", local = TRUE, print.eval = TRUE)
+```
+
+```{r show-variants, fig.width=12, fig.height=6}
+v <- image_variants(as_matrix(x_train[1, ]))
+
+maps <- c(
+  list(original = v$regions$full$img),
+  v$regions$full$edges,
+  v$regions$full$gradients,
+  v$regions$full$gabor
+)
+
+old_par <- par(mfrow = c(4, 4), mar = rep(0, 4))
+
+for (name in names(maps)) {
+  map <- maps[[name]]
+  as_image(map, nr = nrow(map))
+  legend("top", legend = name, bg = "white")
+}
+
+par(old_par)
+```
+
+## ROIs
+
+We also define a number of *regions of interest* (ROIs) in the images
+in order to focus on specific parts of the face, such as the eyes, nose, and mouth.
+
+```{r code=readLines("R/visualization/rois.R"), fold="ROI plotting function", message=FALSE}
+source("R/visualization/rois.R", local = TRUE, print.eval = TRUE)
+```
+
+```{r}
+facial_rois
+plot_image_rois(as_matrix(x_train[1, ]), facial_rois)
+```
+
+## Features
+
+Now, for relevant combinations of image variants and ROIs,
+we can compute a number of *features* that summarize the information in the images.
+
+| Feature group | Motivation | Approach |
+|---|---|---|
+| Histogram of oriented gradients (HOG) | Capture the shapes of facial features. | Sum edge strengths in different directions per grid cell. Full-image grids: 3×3, 4×4, 6×6; ROI grids: 2×2, 4×4. Computed on the full image and all ROIs. |
+| Gabor filters | Capture fine lines. | Average absolute filter response and SD at different angles and spacings. Computed on wider brow, mouth and nose ROIs. |
+| Frey and Slate features | Describe the size and layout of image patterns. | Convert each edge map to b&w using a cutoff; compute summaries of size, position, spread and edge changes. Computed on the full image and all ROIs. |
+| Appearance | Capture brightness and dark areas, e.g., mouth openings. | Mean, SD, 10th/90th brightness percentiles, and dark-pixel shares overall and in top/bottom halves. Computed on the full image, mouth and nose ROIs. |
+| Gradient | Capture strong outlines and creases. | Mean absolute brightness changes across rows and columns, plus mean combined edge strength. Computed on the full image, mouth and nose ROIs. |
+| Projections | Describe where§ dark areas are. | Average darkness per row and column, their maxima and SDs; top-to-bottom slope of the row averages. Computed on the full image, mouth and nose ROIs. |
+| Contrast | Capture uneven brightness within a facial feature. | Top-half mean brightness minus bottom-half mean; left-half mean minus right-half mean. Computed on mouth and nose ROIs. |
+| Symmetry | Capture differences between the two sides. | Flip each ROI left-to-right and average absolute brightness differences between matching pixels. Computed on mouth and nose ROIs. |
+| Relationships | Compare facial features with the whole face. | Full-face mean brightness minus mouth mean; nose and eyebrow mean edge strengths divided by the full-face mean edge strength. |
 
 
-```{r feature-functions, code=readLines("R/features/features.R"), fold="Feature functions"}
-source("R/features/features.R", local = TRUE)
+```{r feature-functions, code=unlist(lapply(list.files("R/features", pattern="\\.R$", full.names=TRUE), readLines)), fold="Feature functions"}
+for (file in list.files("R/features", pattern = "\\.R$", full.names = TRUE)) {
+  source(file, local = TRUE)
+}
 ```
 
 ```{r extract-features}
+cat("Extracting features from training set...\n")
 features_train <- features(x_train)
+```
+
+```{r extract-features-test}
+cat("Extracting features from test set...\n")
 features_test <- features(x_test)
 ```

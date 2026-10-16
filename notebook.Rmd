@@ -20,3 +20,8 @@ source("scripts/setup.R", local = TRUE)
 
 ```{r sections, child=read_sections()}
 ```
+
+---
+
+> Note on AI use:
+> This notebook was developed with the GitHub Copilot line-completion tool.

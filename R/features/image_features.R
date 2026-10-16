@@ -1,0 +1,30 @@
+#' Construct features for a single image.
+#'
+#' @param x Vector of pixel intensities for one image.
+#' @param edge_threshold Threshold for the Frey and Slate binary maps.
+#' @return Numeric vector named by feature family, region, and measurement.
+image_features <- function(x, edge_threshold = 0.0625) {
+  v <- image_variants(as_matrix(x))
+  regions <- v$regions
+  cutoff <- unname(quantile(regions$full$img, 0.3))
+
+  # Select the regions and settings for each feature family here.
+  groups <- list(
+    hog = all_hog_features(regions),
+    gabor = lapply(regions[c("mouth_wide", "brows", "nose_wide")], gabor_features),
+    frey_slate = lapply(regions, frey_slate_features, threshold = edge_threshold),
+    appearance = lapply(
+      regions[c("full", "mouth", "nose")], appearance_features,
+      cutoff = cutoff
+    ),
+    gradient = lapply(
+      regions[c("full", "mouth", "nose")], gradient_features
+    ),
+    projection = lapply(regions[c("mouth", "nose")], projection_features),
+    contrast = lapply(regions[c("mouth", "nose")], contrast_features),
+    symmetry = lapply(regions[c("mouth", "nose")], symmetry_features),
+    relationships = relationship_features(regions)
+  )
+
+  unlist(groups, use.names = TRUE)
+}
