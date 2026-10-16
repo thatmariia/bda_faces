@@ -1,7 +1,7 @@
 #' Construct features from pixel intensities.
 #'
 #' @param x Pixel matrix with one image per row.
-#' @return Feature matrix in the same image order; currently the original pixels.
+#' @return Feature matrix in the same image order.
 features <- function(x) {
   rows <- parallel::mclapply(
     seq_len(nrow(x)),

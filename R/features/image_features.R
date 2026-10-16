@@ -17,6 +17,7 @@ image_features <- function(x, edge_threshold = 0.0625) {
       regions[c("full", "mouth", "nose")], appearance_features,
       cutoff = cutoff
     ),
+    pixel_summary = list(full = pixel_summary_features(regions$full)),
     gradient = lapply(
       regions[c("full", "mouth", "nose")], gradient_features
     ),
