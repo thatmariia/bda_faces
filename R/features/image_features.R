@@ -1,7 +1,7 @@
 #' Construct features for a single image.
 #'
 #' @param x Vector of pixel intensities for one image.
-#' @param edge_threshold Threshold for the Frey and Slate binary maps.
+#' @param edge_threshold Threshold for binary edge features.
 #' @return Numeric vector named by feature family, region, and measurement.
 image_features <- function(x, edge_threshold = 0.0625) {
   v <- image_variants(as_matrix(x))
@@ -17,6 +17,8 @@ image_features <- function(x, edge_threshold = 0.0625) {
       regions[c("full", "mouth", "nose")], appearance_features,
       cutoff = cutoff
     ),
+    pixel_summary = list(full = pixel_summary_features(regions$full)),
+    facial_bands = facial_band_features(regions$full, threshold = edge_threshold),
     gradient = lapply(
       regions[c("full", "mouth", "nose")], gradient_features
     ),
