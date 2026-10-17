@@ -2,6 +2,7 @@ library(tidyverse)
 library(png)
 library(caret, warn.conflicts = FALSE)
 library(ranger)
+library(glmnet)
 options(width = 100)
 
 # Locate the same ckplus directory locally and in Kaggle's mounted inputs.
