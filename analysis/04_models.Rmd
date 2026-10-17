@@ -179,9 +179,9 @@ source("R/models/radial_svm.R", local = TRUE, print.eval = TRUE)
 ```{r fit-svm}
 set.seed(2023)
 models$svm_radial <- fit_radial_svm(features_train, y, control)
-radical_svm <- models$svm_radial
-fit$results                                                  # CV accuracy and its SD
-caret::confusionMatrix(fit)                                  # which emotions get confused, and Accuracy per class
+radial_svm <- models$svm_radial
+radial_svm$results                  # CV accuracy and its SD
+caret::confusionMatrix(radial_svm)   # which emotions get confused
 ```
 
 ### Results
