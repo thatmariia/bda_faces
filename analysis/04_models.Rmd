@@ -75,9 +75,9 @@ set.seed(2023)
 models$lasso <- fit_lasso(features_train, y, control)
 lasso <- models$lasso
 
-lasso$bestTune                     # which lambda was chosen by cross-validation
-lasso$results                      # Accuracy and Accuracy SD for chosen lambda
-caret::confusionMatrix(lasso)      # which emotions get confused, and Accuracy per class
+lasso$bestTune # which lambda was chosen by cross-validation
+lasso$results # Accuracy and Accuracy SD for chosen lambda
+caret::confusionMatrix(lasso) # which emotions get confused, and Accuracy per class
 ```
 
 ### Results
@@ -122,10 +122,10 @@ source("R/models/random_forest.R", local = TRUE, print.eval = TRUE)
 ```{r fit-forest}
 set.seed(2023)
 models$forest <- fit_random_forest(features_train, y, control)
-RF <- models$forest
+forest <- models$forest
 
-RF$results                    # m, Accuracy and , Accuracy SD
-caret::confusionMatrix(RF)    # which emotions get confused, and Accuracy per class
+forest$results # m, Accuracy and , Accuracy SD
+caret::confusionMatrix(forest) # which emotions get confused, and Accuracy per class
 ```
 ### Results
 
@@ -180,8 +180,8 @@ source("R/models/radial_svm.R", local = TRUE, print.eval = TRUE)
 set.seed(2023)
 models$svm_radial <- fit_radial_svm(features_train, y, control)
 radial_svm <- models$svm_radial
-radial_svm$results                  # CV accuracy and its SD
-caret::confusionMatrix(radial_svm)   # which emotions get confused
+radial_svm$results # CV accuracy and its SD
+caret::confusionMatrix(radial_svm) # which emotions get confused
 ```
 
 ### Results
