@@ -1,17 +1,35 @@
 # Fitting models
 
-We'll consider classification trees, random forests, and linear and radial SVMs.
-Random forests are probably the
-least prone to overtraining, and are considered one of the best "off-the-shelf" machine
-learning algorithms, in the sense that they require little expertise to apply and
-perform well without tuning. (That's not to say that tuning shouldn't be considered!)
-It's your Uncle Bob's favorite algorithm, so to speak.
+The goal is to assign each 48×48 face to one of four emotions: anger, disgust, happiness or sadness. 
+We evaluate models by **classification accuracy**, the share of images classified correctly. As mentioned in the introduction of the notebook, 
+humans reach about **74.4%** accuracy on this task, so we expect to do better than that with machine learning using the features
+we've built in section 3. 
+ 
+We compare three statistcial models, ordered from least to most flexible:
 
-```{r model-functions, code=unlist(lapply(list.files("R/models", pattern="\\.R$", full.names=TRUE), readLines)), fold="Model fitting functions", message=FALSE}
-for (file in list.files("R/models", pattern = "\\.R$", full.names = TRUE)) {
-  source(file, local = TRUE)
-}
-```
+1. **Lasso multinomial logistic regression**
+2. **Random forest**: 
+3. **Support vector machine with a radial kernel**
+
+Looking at both less and more flexible models allows us to see how the bias–variance trade-off plays out in practice. A less flexible method has 
+higher bias (it cannot follow the true class boundaries closely) but lower variance (it is less sensitive to the particular training images).
+ Which effect dominates depends on the data, so we cannot tell in
+advance which method will have the highest test accuracy. Instead, we estimate it.
+
+**How we measure performance.** We estimate test accuracy with 5-fold
+cross-validation, with the folds grouped by subject. We do thisThe file names
+start with a subject ID (`S005`, `S010`, ...), and `caret::groupKFold()` puts all images
+of one person in the same fold. Each held-out fold therefore contains only people the model has not seen during training. 
+This matters because the training set contains augmented copies of images and
+neighbouring frames from the same video, which are nearly identical. With random
+folds, near-duplicates of the same face would end up in both the training and the
+validation folds. The model could then score well by recognising the person rather than
+the expression, and the cross-validation estimate of the test accuracy might be too
+optimistic. All three models use the same `folds` object, so
+differences in cross-validated accuracy come from the models, not from different splits.
+
+All models are trained on the built features from Section 3: feature-construction (`features_train`), not on the 2,304 raw pixels.
+The features summarize shapes, edges and brightness in the facial regions that differ between expressions.
 
 ```{r classification-functions, code=readLines("R/evaluation/classification.R"), fold="Classification evaluation function", message=FALSE}
 source("R/evaluation/classification.R", local = TRUE, print.eval = TRUE)
@@ -22,15 +40,165 @@ set.seed(2023)
 subjects <- sub("_.*", "", basename(rownames(x_train)))
 folds <- caret::groupKFold(subjects, k = 5)
 control <- caret::trainControl("cv", 5, index = folds, allowParallel = TRUE)
+models <- list()
 ```
 
-```{r fit-models}
-cat("Training models...\n")
-training <- train_models(features_train, y, control, seed = 2023)
-models <- training$models
+## Lasso multinomial logistic regression
 
-training$timings
+The first model is multinomial logistic regression with an lasso
+penalty on the coefficients. It models the log-odds between each pair of
+emotions as a linear function of the features. We start with the lasso model because we 
+have many engineered features compared with the number of
+subjects, so an unpenalized model would have high variance. The lasso penalty shrinks
+the coefficients towards zero and sets some of them to exactly zero. This both selects a
+smaller set of features and reduces variance. Because its decision boundaries are linear
+in the features, it is the least flexible of our three models and serves as a baseline.
+
+### Parameters
+The penalty strength λ controls the flexibility of the model. A larger λ sets more
+coefficients to zero, which lowers variance but raises bias. With λ = 0 we get ordinary
+multinomial logistic regression. λ is chosen by cross-validation, where we try a grid of 20 values from 1 down
+to 0.0001 and pick the one with the highest accuracy on our subject-grouped folds.
+We use this best λ rather than the one-standard-error rule, because our goal is prediction accuracy rather than the simplest model.
+
+The features are standardized before fitting, so that each has standard deviation one.
+A feature measured on a large scale needs only a small coefficient, so it would be
+penalized less than a feature measured on a small scale. Standardizing puts all
+features on an equal footing. `glmnet()` does this by default.
+
+```{r lasso-function, code=readLines("R/models/lasso.R"), fold="Lasso function", message=FALSE}
+source("R/models/lasso.R", local = TRUE, print.eval = TRUE)
 ```
+
+```{r fit-lasso}
+set.seed(2023)
+models$lasso <- fit_lasso(features_train, y, control)
+lasso <- models$lasso
+
+lasso$bestTune                     # which lambda was chosen by cross-validation
+lasso$results                      # Accuracy and Accuracy SD for chosen lambda
+caret::confusionMatrix(lasso)      # which emotions get confused, and Accuracy per class
+```
+
+### Results
+### Results
+
+Cross-validation selected λ = [LAMBDA]. The model reached a cross-validated accuracy of
+[CV_ACC]% (SD across folds: [CV_SD] percentage points), which is [ABOVE/BELOW] the human
+benchmark of 74.4%. Most errors came from confusing [EMOTION_A] with [EMOTION_B], while
+[EMOTION_C] was recognised best ([CLASS_ACC]% correct).
+
+The lasso's decision boundaries are linear and additive in the features, so it cannot
+capture interactions such as "brows lowered *and* mouth closed" unless we add them by
+hand. Tree-based methods pick up such interactions and non-linear effects automatically.
+
+## Random forest
+A single classification tree would be the simplest tree-based option, but it has high
+variance. A small change in the training data can produce a very different tree, and
+single trees are usually less accurate than other methods. A random
+forest addresses this. It grows many trees, each on a bootstrap sample of the training
+images, and classifies an image by majority vote, and thus averaging many trees reduces the
+variance. In addition, at each split a tree may only choose from a fresh random subset of m of
+the p features, which ends up decorrelating the trees. Without it, most trees would split on the
+same few strong features first and look very similar, and averaging similar trees
+reduces the variance much less. This suits our features well. Many of them are strongly correlated, 
+for example the HOG features of the same region computed on 2×2 and 4×4 grids. 
+
+### Parameters
+The number of features per split, m (`mtry`), controls how different the trees are.
+We consider m = √p features at each split, the standard choice for classification,
+which makes the trees clearly different from each other while still giving each split
+enough features to choose a good one.
+The number of trees, B (`ntree`), does not cause overfitting as it grows, but it only needs
+to be large enough for the error to settle down. Thus we choose to use B = 300.
+We stop splitting a node once it contains 10 or fewer images (`min.node.size = 10`).
+This keeps the individual trees somewhat shallower and less flexible, while the
+averaging over trees keeps the variance under control.
+
+```{r forest-function, code=readLines("R/models/random_forest.R"), fold="Random forest function", message=FALSE}
+source("R/models/random_forest.R", local = TRUE, print.eval = TRUE)
+```
+
+```{r fit-forest}
+set.seed(2023)
+models$forest <- fit_random_forest(features_train, y, control)
+RF <- models$forest
+
+RF$results                    # m, Accuracy and , Accuracy SD
+caret::confusionMatrix(RF)    # which emotions get confused, and Accuracy per class
+```
+### Results
+
+With B = 300 trees, m = [MTRY] features per split and a minimum node size of 10, the
+random forest reached a cross-validated accuracy of [CV_ACC]% (SD across folds:
+[CV_SD] percentage points). This is [GAIN] percentage points [higher/lower] than the
+lasso and [ABOVE/BELOW] the human benchmark of 74.4%. [This suggests that interactions
+and non-linear effects in the features carry useful information that the lasso missed. /
+The extra flexibility did not pay off, which suggests that a linear boundary already
+captures most of the information in our features.] Most errors came from confusing
+[EMOTION_A] with [EMOTION_B], while [EMOTION_C] was recognised best ([CLASS_ACC]% correct).
+
+
+Each tree split uses only one feature at a time, so a random forest builds its decision
+boundaries from axis-aligned steps and struggles to approximate smooth boundaries that
+depend on many features at once. [If anger, disgust and sadness are still
+often confused,] a support vector machine with a radial kernel is a natural next step,
+since it fits a smooth non-linear boundary in the full feature space.
+
+## Radial SVM
+We choose to implement a Rdical SVM instead of a support vector classifier with a linear boundary. 
+Its loss function is very similar to that of logistic regression, so the two often give very similar 
+results, and the lasso already covers a linear boundary for us.
+
+Instead, we use a support vector machine with a radial kernel. Like the support vector
+classifier, it looks for a boundary with a wide margin between the classes, but allows
+some images to fall on the wrong side of the margin. The radial kernel makes the boundary non-linear. 
+It is also local: an image is classified mainly by the training images that are close to it in the feature space, while distant
+images play almost no role. For our four emotions, `e1071::svm()` uses the
+one-versus-one approach. It fits an SVM for each of the six pairs of emotions and
+assigns each image to the emotion that wins most of these pairwise votes..
+
+### Parameters
+`cost` sets how much a violation of the margin is penalised. A large cost gives a
+narrow margin with few violations, and thus also a more flexible boundary with lower bias but higher
+variance. We use cost = 4.
+`gamma` (γ) sets how local the radial kernel is. A larger γ means that
+only very close training images influence a prediction, which makes the boundary more
+non-linear and risks overfitting. Because the kernel sums squared
+differences over all p features, distances grow with the number of
+features. We thus scale γ with p and use γ = 0.1/p.
+Before fitting, we remove features that are constant and centre and scale the rest
+(`preProcess`), which is done within each training fold. As with the lasso, scaling
+matters because the radial kernel is based on distances between images, so features
+measured on a large scale would otherwise dominate.
+
+```{r svm-function, code=readLines("R/models/radial_svm.R"), fold="Radial SVM function", message=FALSE}
+source("R/models/radial_svm.R", local = TRUE, print.eval = TRUE)
+```
+
+```{r fit-svm}
+set.seed(2023)
+models$svm_radial <- fit_radial_svm(features_train, y, control)
+radical_svm <- models$svm_radial
+fit$results                                                  # CV accuracy and its SD
+caret::confusionMatrix(fit)                                  # which emotions get confused, and Accuracy per class
+```
+
+### Results
+With cost = 4 and γ = 0.1/p, the radial SVM reached a cross-validated accuracy of
+[CV_ACC]% (SD across folds: [CV_SD] percentage points). This is [GAIN_RF] percentage
+points [higher/lower] than the random forest and [GAIN_LASSO] percentage points
+[higher/lower] than the lasso, and [ABOVE/BELOW] the human benchmark of 74.4%.
+[This suggests that a smooth non-linear boundary in the full feature space separates
+the emotions better than the forest's axis-aligned splits. / The smooth boundary did not
+improve on the forest, which suggests that the axis-aligned splits already capture the
+relevant non-linear structure in our features.] Most errors came from confusing
+[EMOTION_A] with [EMOTION_B], while [EMOTION_C] was recognised best ([CLASS_ACC]% correct).
+
+## Comparing the models
+Because all three models were evaluated on the same subject-grouped folds, we can
+compare their cross-validated accuracies directly. The table below lists each model's
+mean accuracy over the five folds and its training time, sorted from best to worst.
 
 ```{r compare-models}
 # Compare models on the same folds
@@ -39,7 +207,7 @@ model_comparison <- summary(resampling)$statistics$Accuracy |>
   as.data.frame() |>
   rownames_to_column("model") |>
   select(model, accuracy = Mean) |>
-  left_join(training$timings, by = "model") |>
+  mutate(seconds = sapply(models[model], function(m) m$times$everything[["elapsed"]])) |>
   arrange(dplyr::desc(accuracy))
 model_comparison
 ```
@@ -56,3 +224,16 @@ training_performance <- lapply(models, function(model) {
 })
 training_performance
 ```
+
+On the training set, the lasso classified [TRAIN_LASSO]% of the images correctly, the
+random forest [TRAIN_RF]% and the radial SVM [TRAIN_SVM]%, compared with cross-validated
+accuracies of [CV_LASSO]%, [CV_RF]% and [CV_SVM]%. [None of the models underfits badly. /
+The lasso already struggles on the training images, which points to high bias.] The gap
+between training and cross-validated accuracy is [GAP_LASSO] percentage points for the
+lasso, [GAP_RF] for the forest and [GAP_SVM] for the SVM. [As expected from the
+bias–variance trade-off, the gap grows with flexibility: the more flexible models fit the
+training images more closely, but part of that fit does not carry over to new subjects. /
+Unlike what the bias–variance trade-off would suggest, the gap does not grow with
+flexibility, which suggests that ...] For the forest, a high training accuracy is
+expected anyway, since its trees are grown deep. We therefore choose between the models
+by their cross-validated accuracy, not their training accuracy (Section 5).
