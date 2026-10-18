@@ -18,3 +18,18 @@ source("R/visualization/importance.R", local = TRUE, print.eval = TRUE)
 ```{r}
 plot_feature_importance(final_model, top = 30)
 ```
+
+A majority of the most important features are taken from the mouth region. At the top are
+the contrast between the upper and lower mouth (`contrast.mouth.top_bottom`). Adittionally, 
+Gabor filters measuring diagonal texture across the wide mouth area seem to matter. 
+These are then followed by texture features of the mouth and, to a lesser extent, the right cheek and the nose.
+Interestingly, features around the eyes and brows do not appear among the 30 most important ones. 
+
+However, it seems that for disgust different features matter.
+Most mouth features matter significantly less, while the few features
+that stand out are linked to the nose (`frey_slate.nose_wide.vertical.yegvx`) and to edge
+directions around the mouth (`hog` features). This makes sense considering that often when
+producing disgust faces, most people wrinkle their noses and can twist their mouth edges.
+Important to note, because these importance scores measure how well each feature separatesthe
+ emotions on its own, they show which features are informative. 
+ These are not necessarily the same as the combinations of features the SVM relies on most.
