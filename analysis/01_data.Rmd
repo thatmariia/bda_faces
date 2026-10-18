@@ -1,3 +1,17 @@
+# Introduction
+
+Facial expressions are one of the most important ways in which people communicate emotions. Computers that can recognize emotions from faces could make human–computer interaction more natural. Possible applications are social robots, driver monitoring and tools that support mental health care. Automatic facial expression recognition is therefore an active research area (Mollahosseini et al., 2017). The task is difficult, also for humans. Facial expressions differ between people, emotions such as anger and sadness can look alike and spontaneous expressions are often subtle. In this notebook we build a classifier to predict which one of four emotions, disgust, anger, happiness or sadness, is shown in an image of a face. We measure performance with accuracy: the proportion of images for which the predicted emotion is the true emotion. We estimate it with 5-fold cross-validation grouped by person. 
+
+The human benchmark for the dataset used in this notebook lies at 74.4% (UvA students, mostly Psychology, n = 20). However, according to Mollahosseini et al. (2017) the percentage of agreement between human judges differs between the four emotions when measured on a different dataset with 11 categories. For disgust the agreement rate is 67.6%, for anger 62.3%, for happiness 79.6% and for sadness 69.7%.
+
+The images come from a study by Lucey et al. (2010) which had 101 participants aged 18–50 of whom 69% were female and 81% Euro-American, 13% Afro-American and 6% other groups. The images are stills from video sequences, in which participants face the camera and are asked to deliberately display certain emotions. Each sequence goes from neutral to the peak expression, which means that the same faces occur in the dataset multiple times and some frames may show only a weak expression while others show very strong ones. Specifically for this competition, the images are cropped tightly to the faces they display and are shrunk to a 48x48 size and converted to grayscale. Randomly rotated and shifted copies were also added. The consequence of this set-up is that results will generalize only to similar images: small, grayscale, frontally captured faces displaying either disgust, anger, happiness or sadness. Results are unlikely to carry over to spontaneous, subtle expressions, other lighting or angles or other groups of people. Also, since faces occur multiple times random cross-validation folds would be too optimistic, so folds should be grouped by person.
+
+As mentioned, human judges classified 74.4% of the images in this dataset correctly, an error of 25.6%. However, humans are only one classifier, so this is an upper limit on the Bayes error, not the Bayes error itself. Two things suggest that the Bayes error is actually much lower. Firstly, the expressions are posed and often exaggerated. Secondly, the labels were checked by experts using Action Units (Lucey et al., 2010), so there are probably few labelling mistakes. Still, the Bayes error is not zero. The early frames of each sequence are close to a neutral face, anger, disgust and sadness look alike, the low resolution (48x48 pixels) removes detail and augmented (shifted or rotated) copies may cut off parts of the face.
+
+Lucey et al. (2010) report a baseline classifier on their data set (a linear SVM on shape and appearance features). For our four emotions it correctly classifies 100% of the happy, 94.7% of the disgust, 75.0% of the anger and 68.0% of the sad expressions, about 84% on average. This gives a tighter upper limit on the Bayes error (about 16%) than the human judges. These numbers do not carry over directly to our task. Our task is easier with regard to the fact that we have four instead of seven classes, but harder because Lucey et al. subtracted a neutral frame of the same person from each image and used high-resolution peak frames, while we classify single 48x48 images.
+
+Weighing these arguments, we estimate the Bayes error at roughly 5–15%, which means a best achievable accuracy of about 85–95%. This is the benchmark we compare our results with in the conclusion.
+
 # Reading image files
 
 Get all image files: file names ending in `.png`.
@@ -10,28 +24,4 @@ source("R/data/read_images.R", local = TRUE, print.eval = TRUE)
 image_files <- find_image_files(data_dir)
 ```
 
-## Data info
 
-Where do the data come from? (To which population will results generalize?)
-
-> The used grayscale photos are from CK+ database. The data includes 4 labeled emotions: anger, happiness, sadness, and surprise.
-> The images are cropped to 48×48 pixels and converted to grayscale.
-> The original source study recorded posed expressions from adults aged 18–50,
-> mostly female (69%) and Euro-American (81%)
-> ([Lucey et al., 2010](https://www.pitt.edu/~jeffcohn/CVPR2010_CK%2B2.pdf)).
-> We expect the results to transfer to the similar posed expressions and photographic conditions.
-> It is doubtful that the performance will generalize to images from uncontrolled conditions or other populations.
-
-What are candidate machine learning methods? (models? features?)
-
-> Classification trees and random forests, with PCA as an optional way to reduce the number of features.
-> Raw pixels provide a simple baseline.
-> Additional features should describe facial patterns.
-> Other candidates (for later) include KNN, LDA, and SVM.
-
-What is the Bayes' error bound? (Any guestimate from scientific literature or web resources?)
-
-> Couldn't find a verified source for the Bayes error bound for this dataset.
-> [Lucey et al. (2010)](https://www.pitt.edu/~jeffcohn/CVPR2010_CK%2B2.pdf) report classifier
-> performance on seven emotions using a neutral expression as a reference,
-> but it does not constitute a Bayes-error estimate for our dataset with 4 labels.
