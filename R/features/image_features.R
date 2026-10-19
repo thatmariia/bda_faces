@@ -25,7 +25,8 @@ image_features <- function(x, edge_threshold = 0.0625) {
     projection = lapply(regions[c("mouth", "nose")], projection_features),
     contrast = lapply(regions[c("mouth", "nose")], contrast_features),
     symmetry = lapply(regions[c("mouth", "nose")], symmetry_features),
-    relationships = relationship_features(regions)
+    relationships = relationship_features(regions),
+    entropy = list(full = entropy_features(regions$full))
   )
 
   unlist(groups, use.names = TRUE)
