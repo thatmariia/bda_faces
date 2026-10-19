@@ -1,0 +1,11 @@
+# Notes
+
+## Division of labor
+
+TODO
+
+> Note on AI use:
+> This notebook was developed with the GitHub Copilot line-completion tool.
+> Additionally, the following files were used to provide context to some of the LLM chats:
+> [competition context](https://github.com/thatmariia/bda_faces/blob/main/competition_context.md),
+> [ai assistant context](https://github.com/thatmariia/bda_faces/blob/main/ai_assistant_context.md).
