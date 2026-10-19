@@ -5,8 +5,3 @@ We extracted 3,145 features describing the shape, edges and brightness of the fa
 The SVM's cross-validated error of 7.7% falls within the Bayes error of 5–15% we estimated in the introduction, which suggests further improvement may be limited on this data. The SVM’s accuracy of 92.3% is also well above the human benchmark of 74.4%. We must note that this does not mean the model recognizes emotions better than people: it has learned the specific posed, exaggerated expressions of this data set. The model’s main weakness is sad faces: only 71.4% were classified correctly and about 25% were classified as anger, the same confusion Lucey et al. (2010) found. 
 
 One limitation is that only the lasso was tuned: the random forest and the SVM used fixed settings (for the SVM, cost = 4 and γ = 0.1/p). Because the folds are grouped by person, the 92.3% is a realistic estimate for new people, but tuning the SVM's cost and γ with the same cross-validation could still improve it.
-
-# References
-Lucey, P., Cohn, J. F., Kanade, T., Saragih, J., Ambadar, Z., & Matthews, I. (2010). The Extended Cohn-Kanade Dataset (CK+): A complete dataset for action unit and emotion-specified expression. In *2010 IEEE Computer Society Conference on Computer Vision and Pattern Recognition – Workshops* (pp. 94–101). IEEE. https://doi.org/10.1109/CVPRW.2010.5543262
-
-Mollahosseini, A., Hasani, B., & Mahoor, M. H. (2017). *AffectNet: A database for facial expression, valence, and arousal computing in the wild.* arXiv. https://doi.org/10.48550/arXiv.1708.03985
