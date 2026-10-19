@@ -29,6 +29,10 @@ renv::restore()
 ```
 
 On Windows, restore with `renv::restore(exclude = "doMC")`.
+DenseNet also needs Python 3.12. After restoring R packages, run
+`Rscript scripts/install_tensorflow.R` once to create the local `.venv`.
+Pretrained weights download on first use.
+Kaggle uses its existing Python environment.
 Rendering also requires Pandoc; RStudio bundles it. Outside RStudio, check
 `rmarkdown::pandoc_available()` and [install Pandoc](https://pandoc.org/installing.html)
 if needed. Follow `data/README.md` for input placement. Data and outputs are ignored by Git.

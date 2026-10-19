@@ -10,5 +10,9 @@ features <- function(x) {
   )
   fs <- do.call(rbind, rows)
   rownames(fs) <- rownames(x)
-  fs
+
+  # Combine the handcrafted features with the deep features.
+  # Commented out because the deep features are not used in the final model,
+  # see Appendix.
+  # cbind(fs, deep_features(x))
 }

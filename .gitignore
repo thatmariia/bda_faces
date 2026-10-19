@@ -4,6 +4,7 @@ data/*
 output/*
 !output/.gitkeep
 .Rproj.user/
+.venv/
 .Rhistory
 .RData
 .Ruserdata

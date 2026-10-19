@@ -31,3 +31,10 @@ n_cores <- if (.Platform$OS.type == "windows") {
   max(1, parallel::detectCores() - 1)
 }
 if (n_cores > 1) doMC::registerDoMC(cores = n_cores) else foreach::registerDoSEQ()
+
+# Use the local TensorFlow environment when present, Kaggle provides its own.
+if (!on_kaggle && dir.exists(here::here(".venv"))) {
+  python <- if (.Platform$OS.type == "windows") "Scripts/python.exe" else "bin/python"
+  Sys.setenv(RETICULATE_PYTHON = here::here(".venv", python))
+}
+Sys.setenv(TF_NUM_INTEROP_THREADS = 1L, TF_NUM_INTRAOP_THREADS = min(4L, n_cores))
