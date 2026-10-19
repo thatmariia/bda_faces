@@ -227,3 +227,13 @@ perfectly. In this case, how well a model generalises depends less on how flexib
 boundary is and more on how well it avoids fitting noise. For the forest, a high training
 accuracy is expected, since its trees are grown deep. We therefore choose between
 the models by their cross-validated accuracy, not their training accuracy (Section 5).
+
+```{r confidence, code=readLines("R/visualization/confidence.R"), fold="Confidence intervals", message=FALSE}
+source("R/visualization/confidence.R", local = TRUE, print.eval = TRUE)
+```
+
+```{r confidence-plot}
+plot_confidence_intervals(models, metric = c("Accuracy", "Kappa"))
+```
+
+TODO write about the confidence interval plots
