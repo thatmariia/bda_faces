@@ -7,7 +7,7 @@ which are intended to highlight certain aspects of the images.
 These variants are constructed using various image processing techniques,
 such as edge detection and gradient computation.
 
-```{r variant-functions, code=unlist(lapply(list.files("R/variants", pattern="\\.R$", full.names=TRUE), readLines)), fold="Variants functions"}
+```{r variant-functions, code=unlist(lapply(list.files("R/variants", pattern="\\.R$", full.names=TRUE), function(file) c(readLines(file), ""))), fold="Variants functions"}
 for (file in list.files("R/variants", pattern = "\\.R$", full.names = TRUE)) {
   source(file, local = TRUE)
 }
@@ -75,7 +75,7 @@ we can compute a number of *features* that summarize the information in the imag
 TODO: write about the deep features in the appendix.
 
 
-```{r feature-functions, code=unlist(lapply(setdiff(list.files("R/features", pattern="\\.R$", full.names=TRUE), "R/features/deep_features.R"), readLines)), fold="Feature functions"}
+```{r feature-functions, code=unlist(lapply(setdiff(list.files("R/features", pattern="\\.R$", full.names=TRUE), "R/features/deep_features.R"), function(file) c(readLines(file), ""))), fold="Feature functions"}
 for (file in setdiff(
   list.files("R/features", pattern = "\\.R$", full.names = TRUE),
   "R/features/deep_features.R"
