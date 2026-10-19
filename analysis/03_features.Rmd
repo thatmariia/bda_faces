@@ -71,9 +71,14 @@ we can compute a number of *features* that summarize the information in the imag
 | Symmetry | Capture differences between the two sides. | Flip each ROI left-to-right and average absolute brightness differences between matching pixels. Computed on mouth and nose ROIs. |
 | Relationships | Compare facial features with the whole face. | Full-face mean brightness minus mouth mean; nose and eyebrow mean edge strengths divided by the full-face mean edge strength. |
 
+TODO: write about the deep features in the appendix.
 
-```{r feature-functions, code=unlist(lapply(list.files("R/features", pattern="\\.R$", full.names=TRUE), readLines)), fold="Feature functions"}
-for (file in list.files("R/features", pattern = "\\.R$", full.names = TRUE)) {
+
+```{r feature-functions, code=unlist(lapply(setdiff(list.files("R/features", pattern="\\.R$", full.names=TRUE), "R/features/deep_features.R"), readLines)), fold="Feature functions"}
+for (file in setdiff(
+  list.files("R/features", pattern = "\\.R$", full.names = TRUE),
+  "R/features/deep_features.R"
+)) {
   source(file, local = TRUE)
 }
 ```
