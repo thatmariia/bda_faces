@@ -80,7 +80,7 @@ caret::confusionMatrix(lasso) # which emotions get confused, and Accuracy per cl
 ```
 
 Cross-validation selected λ = 0.00298. The model reached a cross-validated accuracy of
-90.3% (SD across folds: 5.0 percentage points), which is above the human
+90.4% (SD across folds: 5.0 percentage points), which is above the human
 benchmark of 74.4%. Most errors came from confusing sad with anger, while
 happy was recognised best (98.5% correct).
 
@@ -126,8 +126,8 @@ caret::confusionMatrix(forest) # which emotions get confused, and Accuracy per c
 ```
 
 Contrary to what we expectated, the random forest performed worse than the lasso, with a
-cross-validated accuracy of 82.3% (SD across folds: 8.2 percentage points) compared with
-90.3% for the lasso. The drop came mainly from sad faces. The forest-model recognised only about
+cross-validated accuracy of 82.6% (SD across folds: 8.6 percentage points) compared with
+90.4% for the lasso. The drop came mainly from sad faces. The forest-model recognised only about
 31% of them, and misclassifyed most of them as anger. This might suggest that 
 for our features, the gain from modelling interactions between them did not outweigh the
 cost of the forest model's weaker handling of the smaller, harder-to-distinguish classes (such as sadness and anger).
@@ -178,9 +178,9 @@ radial_svm$results # CV accuracy and its SD
 caret::confusionMatrix(radial_svm) # which emotions get confused
 ```
 
-The radial SVM was the best of the three models, with a cross-validated accuracy of 92.3%
-(SD across folds: 3.5 percentage points). This is above both the lasso (90.3%) and the
-random forest (82.3%), and well above the human benchmark of 74.4%. Happy faces were
+The radial SVM was the best of the three models, with a cross-validated accuracy of 92.4%
+(SD across folds: 3.5 percentage points). This is above both the lasso (90.4%) and the
+random forest (82.6%), and well above the human benchmark of 74.4%. Happy faces were
 recognised almost perfectly (99.7% correct), followed by disgust (95.2%) and anger (89.8%).
 Sad faces remained the most difficult to classify (71.4% correct). As with the other models, most
 of these errors came from sad faces being classified as anger, which happened to about 25% of them.
@@ -216,9 +216,9 @@ training_performance
 ```
 
 On the training set, the lasso and the random forest classified 100% of the images
-correctly and the radial SVM 99.9%, compared with their cross-validated accuracies of 90.3%,
-82.3% and 92.3%. None of the models underfits badly. The gap between training and
-cross-validated accuracy is 9.7 percentage points for the lasso, 17.7 for the forest and
+correctly and the radial SVM 99.9%, compared with their cross-validated accuracies of 90.4%,
+82.6% and 92.4%. None of the models underfits badly. The gap between training and
+cross-validated accuracy is 9.6 percentage points for the lasso, 17.6 for the forest and
 7.6 for the SVM. Unlike what the bias–variance trade-off would suggest, the gap doesn't just grow with flexibility. 
 For example, the SVM which is a more flexible model than the lasso, has the
 smallest gap. This might be because we have more features than images (about 3,145
@@ -236,4 +236,10 @@ source("R/visualization/confidence.R", local = TRUE, print.eval = TRUE)
 plot_confidence_intervals(models, metric = c("Accuracy", "Kappa"))
 ```
 
-TODO write about the confidence interval plots
+The figure above shows the 95% confidence intervals to the cross-validated accuracy and Kappa of each
+model, based on the variation across the five folds. Although the SVM has the highest mean
+accuracy, its interval (about 88–97%) lies almost entirely within that of the lasso (about
+84–96%), and it also overlaps with the much wider interval of the random forest (about
+71–93%). Kappa shows the same pattern. Because we only have five folds, the intervals are
+wide, so we cannot be confident that the SVM truly performs better than the other models,
+especially the lasso.

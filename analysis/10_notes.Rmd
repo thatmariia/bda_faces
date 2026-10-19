@@ -2,10 +2,21 @@
 
 ## Division of labor
 
-TODO
+**Mariia** wrote Sections 2 and 3 (feature extraction) and provided most of the code used
+throughout the notebook.
+
+**Ilinca** wrote Sections 4 and 5 (model fitting and model selection), building and
+explaining the three models, using functions that Mariia had already written.
+
+**Luna** wrote the introduction and conclusion, and added some
+explanations of the features in Section 3.
+
+All three of us organised meetings, divided the workload and discussed problems as they
+came up.
 
 > Note on AI use:
 > This notebook was developed with the GitHub Copilot line-completion tool.
 > Additionally, the following files were used to provide context to some of the LLM chats:
 > [competition context](https://github.com/thatmariia/bda_faces/blob/main/competition_context.md),
 > [ai assistant context](https://github.com/thatmariia/bda_faces/blob/main/ai_assistant_context.md).
+
