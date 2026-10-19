@@ -10,6 +10,7 @@ cat("Writing submission file...\n")
 # Make predictions
 set.seed(2023)
 predictions <- predict(final_model, features_test, type = "raw")
+predictions <- sub("^sad$", "sadness", predictions)
 
 # Write to file
 submission_file <- file.path(output_dir, "submission.csv")
