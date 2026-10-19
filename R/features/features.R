@@ -14,5 +14,5 @@ features <- function(x) {
   # Combine the handcrafted features with the deep features.
   # Commented out because the deep features are not used in the final model,
   # see Appendix.
-  # cbind(fs, deep_features(x))
+  # cbind(fs, deep_features(x))  nolint: commented_code_linter
 }
