@@ -72,8 +72,7 @@ we can compute a number of *features* that summarize the information in the imag
 | Symmetry | Capture differences between the two sides. | Flip each ROI left-to-right and average absolute brightness differences between matching pixels. Computed on mouth and nose ROIs. |
 | Relationships | Compare facial features with the whole face. | Full-face mean brightness minus mouth mean; nose and eyebrow mean edge strengths divided by the full-face mean edge strength. |
 
-TODO: write about the deep features in the appendix.
-
+We also tested deep features from a pretrained network (DenseNet201, trained on ImageNet), an idea from the Quickstart. Because the network expects color images, each grayscale image was copied into three channels. The network then returned 1,920 features per image, which were added to the handcrafted features. Adding them did not improve the cross-validated accuracy. This may be because the network was trained on large color photos of objects rather than small grayscale faces and because the features add 1,920 extra columns for only 2,538 images, which increases the risk of overfitting. We therefore did not use the deep features in the final model. The code we originally used can be found in the appendix. A possible improvement for a future classifier is using the deep features on ROIs instead of on the entire face like in this notebook. This might improve accuracy, because each region would then be enlarged to the input size of the network on its own, instead of taking up only a small part of the whole face, so that the network can make better use of the detail in that region. Our handcrafted features were also largely computed per ROI, which worked well.
 
 ```{r feature-functions, code=unlist(lapply(setdiff(list.files("R/features", pattern="\\.R$", full.names=TRUE), "R/features/deep_features.R"), function(file) c(readLines(file), ""))), fold="Feature functions"}
 for (file in setdiff(

@@ -2,3 +2,5 @@
 Lucey, P., Cohn, J. F., Kanade, T., Saragih, J., Ambadar, Z., & Matthews, I. (2010). The Extended Cohn-Kanade Dataset (CK+): A complete dataset for action unit and emotion-specified expression. In *2010 IEEE Computer Society Conference on Computer Vision and Pattern Recognition – Workshops* (pp. 94–101). IEEE. https://doi.org/10.1109/CVPRW.2010.5543262
 
 Mollahosseini, A., Hasani, B., & Mahoor, M. H. (2017). *AffectNet: A database for facial expression, valence, and arousal computing in the wild.* arXiv. https://doi.org/10.48550/arXiv.1708.03985
+
+Huang, G., Liu, Z., van der Maaten, L., & Weinberger, K. Q. (2017). Densely connected convolutional networks. In 2017 IEEE Conference on Computer Vision and Pattern Recognition (pp. 2261–2269). IEEE. https://doi.org/10.1109/CVPR.2017.243

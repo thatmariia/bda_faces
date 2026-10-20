@@ -9,7 +9,7 @@ throughout the notebook.
 explaining the three models, using functions that Mariia had already written.
 
 **Luna** wrote the introduction and conclusion, and added some
-explanations of the features in Section 3.
+explanations of the features in Section 3. She also contributed to the feature extraction: the “Facial bands” features
 
 All three of us organised meetings, divided the workload and discussed problems as they
 came up.
