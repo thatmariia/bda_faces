@@ -1,7 +1,5 @@
 # Appendix
 
-TODO
-
 ```{r code=readLines("R/features/deep_features.R"), fold="Deep features", message=FALSE}
 source("R/features/deep_features.R", local = TRUE, print.eval = TRUE)
 ```
